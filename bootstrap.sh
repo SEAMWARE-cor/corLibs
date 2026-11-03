@@ -41,7 +41,7 @@ BASE="${BASE:-$(dirname "$HERE")}"
 PROTO="${PROTO:-https}"
 JOBS="${JOBS:-$(nproc 2>/dev/null || echo 4)}"
 
-CI_ORG="SEAMWARE"        # the cor* repos
+CI_ORG="SEAMWARE-cor"    # the cor* repos
 
 #
 # repo : host : ref

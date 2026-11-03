@@ -48,34 +48,34 @@ Each library has its own README (linked below — the repo landing page renders 
 
 **Cor-Libs** (github.com/SEAMWARE):
 
-- [corBase](https://github.com/SEAMWARE/corBase) — core utilities, coroutines and the library log
-- [corLog](https://github.com/SEAMWARE/corLog) — logging and trace levels
-- [corAlloc](https://github.com/SEAMWARE/corAlloc) — arena allocator (`CorAlloc`)
-- [corArgs](https://github.com/SEAMWARE/corArgs) — CLI argument parsing
-- [corHash](https://github.com/SEAMWARE/corHash) — hash tables
-- [corTree](https://github.com/SEAMWARE/corTree) — the tree (`CorNode`): build, edit, look up, clone, sort
-- [corJson](https://github.com/SEAMWARE/corJson) — JSON parser and renderers over a corTree, and the `corJson` tool
-- [corProm](https://github.com/SEAMWARE/corProm) — Prometheus metrics
-- [corHttp](https://github.com/SEAMWARE/corHttp) — HTTP server (the builtin backend: `SO_REUSEPORT` event loops)
-- [corBridge](https://github.com/SEAMWARE/corBridge) — the contract a bridge plugin satisfies
-- [corRest](https://github.com/SEAMWARE/corRest) — REST server (libmicrohttpd or corHttp) + HTTP client
-- [corJsonld](https://github.com/SEAMWARE/corJsonld) — JSON-LD context expansion / compaction
-- [corPlugin](https://github.com/SEAMWARE/corPlugin) — generic plugin loader (`dlopen` wrapper)
-- [corNgsild](https://github.com/SEAMWARE/corNgsild) — NGSI-LD validation + format conversion
+- [corBase](https://github.com/SEAMWARE-cor/corBase) — core utilities, coroutines and the library log
+- [corLog](https://github.com/SEAMWARE-cor/corLog) — logging and trace levels
+- [corAlloc](https://github.com/SEAMWARE-cor/corAlloc) — arena allocator (`CorAlloc`)
+- [corArgs](https://github.com/SEAMWARE-cor/corArgs) — CLI argument parsing
+- [corHash](https://github.com/SEAMWARE-cor/corHash) — hash tables
+- [corTree](https://github.com/SEAMWARE-cor/corTree) — the tree (`CorNode`): build, edit, look up, clone, sort
+- [corJson](https://github.com/SEAMWARE-cor/corJson) — JSON parser and renderers over a corTree, and the `corJson` tool
+- [corProm](https://github.com/SEAMWARE-cor/corProm) — Prometheus metrics
+- [corHttp](https://github.com/SEAMWARE-cor/corHttp) — HTTP server (the builtin backend: `SO_REUSEPORT` event loops)
+- [corBridge](https://github.com/SEAMWARE-cor/corBridge) — the contract a bridge plugin satisfies
+- [corRest](https://github.com/SEAMWARE-cor/corRest) — REST server (libmicrohttpd or corHttp) + HTTP client
+- [corJsonld](https://github.com/SEAMWARE-cor/corJsonld) — JSON-LD context expansion / compaction
+- [corPlugin](https://github.com/SEAMWARE-cor/corPlugin) — generic plugin loader (`dlopen` wrapper)
+- [corNgsild](https://github.com/SEAMWARE-cor/corNgsild) — NGSI-LD validation + format conversion
 
 **Plugins** (github.com/SEAMWARE):
 
-- [corDB](https://github.com/SEAMWARE/corDB) — the in-process database: current state and TRoE (`corDB.so`, `troe/corDB.so`)
-- [corDdsBridge](https://github.com/SEAMWARE/corDdsBridge) — DDS (and ROS 2) bridge, `dds.so`
-- [corModbusBridge](https://github.com/SEAMWARE/corModbusBridge) — Modbus bridge, `modbus.so`
-- [corMqttBridge](https://github.com/SEAMWARE/corMqttBridge) — MQTT bridge, `mqtt.so`
-- [corCkanBridge](https://github.com/SEAMWARE/corCkanBridge) — CKAN open-data bridge (not built by the umbrella)
-- [corOpcuaBridge](https://github.com/SEAMWARE/corOpcuaBridge) — OPC UA bridge, open62541 (not built by the umbrella)
+- [corDB](https://github.com/SEAMWARE-cor/corDB) — the in-process database: current state and TRoE (`corDB.so`, `troe/corDB.so`)
+- [corDdsBridge](https://github.com/SEAMWARE-cor/corDdsBridge) — DDS (and ROS 2) bridge, `dds.so`
+- [corModbusBridge](https://github.com/SEAMWARE-cor/corModbusBridge) — Modbus bridge, `modbus.so`
+- [corMqttBridge](https://github.com/SEAMWARE-cor/corMqttBridge) — MQTT bridge, `mqtt.so`
+- [corCkanBridge](https://github.com/SEAMWARE-cor/corCkanBridge) — CKAN open-data bridge (not built by the umbrella)
+- [corOpcuaBridge](https://github.com/SEAMWARE-cor/corOpcuaBridge) — OPC UA bridge, open62541 (not built by the umbrella)
 
 **Tooling** (github.com/SEAMWARE):
 
-- [corTest](https://github.com/SEAMWARE/corTest) — generic functional-test harness (input → stdout, with `REGEX()` / `#SORT` smart diff); `install` collects its runner into `bin/`
-- [corTools](https://github.com/SEAMWARE/corTools) — `corRequest` (a cor:// client: one request like `curl -i`, or load like `wrk`), `corTestClient` (notification receiver, mock context source, bridge-plugin host) and `corMongoDrop` (drops MongoDB databases fast, where libmongoc is); `install` collects them into `bin/`
+- [corTest](https://github.com/SEAMWARE-cor/corTest) — generic functional-test harness (input → stdout, with `REGEX()` / `#SORT` smart diff); `install` collects its runner into `bin/`
+- [corTools](https://github.com/SEAMWARE-cor/corTools) — `corRequest` (a cor:// client: one request like `curl -i`, or load like `wrk`), `corTestClient` (notification receiver, mock context source, bridge-plugin host) and `corMongoDrop` (drops MongoDB databases fast, where libmongoc is); `install` collects them into `bin/`
 
 ## Prerequisites
 
@@ -98,7 +98,7 @@ If you don't have the sibling repos yet, the easiest path is
 as a sibling of corLibs, then runs the umbrella build.
 
 ```sh
-git clone https://github.com/SEAMWARE/corLibs.git && cd corLibs
+git clone https://github.com/SEAMWARE-cor/corLibs.git && cd corLibs
 ./bootstrap.sh                  # PROTO=ssh for SSH URLs, NOBUILD=1 to clone only
 ```
 
