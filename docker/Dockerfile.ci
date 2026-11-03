@@ -163,7 +163,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # the stack it adds is 21 MiB.
 #
 RUN mkdir -p /tmp/dds/src && cd /tmp/dds \
- && curl -fsSL "https://raw.githubusercontent.com/SEAMWARE/corDdsBridge/${CORDDSBRIDGE_REF}/ddsenabler-pinned.repos" \
+ && curl -fsSL "https://raw.githubusercontent.com/SEAMWARE-cor/corDdsBridge/${CORDDSBRIDGE_REF}/ddsenabler-pinned.repos" \
          -o ddsenabler.repos \
  && vcs import src < ddsenabler.repos \
  && echo "--- the DDS stack being built:" \
