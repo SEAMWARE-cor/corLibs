@@ -61,7 +61,7 @@ WORK=$(mktemp -d "${TMPDIR:-/tmp}/mongocBuild.XXXXXX")
 [ $KEEP = 1 ] || trap 'rm -rf "$WORK"' EXIT
 
 tarball="mongo-c-driver-$MONGOC_VERSION.tar.gz"
-curl -fsSL "https://github.com/mongodb/mongo-c-driver/releases/download/$MONGOC_VERSION/$tarball" -o "$WORK/$tarball"
+curl -fsSL --retry 5 --retry-delay 10 --connect-timeout 30 "https://github.com/mongodb/mongo-c-driver/releases/download/$MONGOC_VERSION/$tarball" -o "$WORK/$tarball"
 
 have=$(sha256sum "$WORK/$tarball" | cut -d' ' -f1)
 if [ "$have" != "$want" ]; then
