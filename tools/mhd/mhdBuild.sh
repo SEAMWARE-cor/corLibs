@@ -55,7 +55,7 @@ WORK=$(mktemp -d "${TMPDIR:-/tmp}/mhdBuild.XXXXXX")
 [ $KEEP = 1 ] || trap 'rm -rf "$WORK"' EXIT
 
 tarball="libmicrohttpd-$MHD_VERSION.tar.gz"
-curl -fsSL "https://ftp.gnu.org/gnu/libmicrohttpd/$tarball" -o "$WORK/$tarball"
+curl -fsSL --retry 5 --retry-delay 10 --connect-timeout 30 "https://ftp.gnu.org/gnu/libmicrohttpd/$tarball" -o "$WORK/$tarball"
 
 have=$(sha256sum "$WORK/$tarball" | cut -d' ' -f1)
 if [ "$have" != "$want" ]; then
