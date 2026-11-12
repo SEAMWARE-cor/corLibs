@@ -48,7 +48,18 @@ ROOT ?= $(abspath $(dir $(lastword $(MAKEFILE_LIST)))..)
 # needs nothing beyond libc, so it is always built. corMqttBridge likewise, with
 # libmosquitto, which the broker itself linked until MQTT became mqtt.so.
 #
-COR_DIRS = corBase corLog corAlloc corArgs corHash corTree corJson corProm corHttp corBridge corRest corJsonld corPlugin corNgsild corDB corTools corDdsBridge corModbusBridge corMqttBridge
+# The bridges are OPTIONAL directories: a bridge plugin is built when its clone is there and skipped, said once,
+# when it is not - a broker built without dds needs no corDdsBridge clone (coraine-build exports only the bridges
+# --bridges names). The libraries above are not optional: a missing one still fails the build.
+#
+COR_LIB_DIRS    = corBase corLog corAlloc corArgs corHash corTree corJson corProm corHttp corBridge corRest corJsonld corPlugin corNgsild corDB corTools
+COR_BRIDGE_DIRS = corDdsBridge corModbusBridge corMqttBridge
+COR_BRIDGES_HERE   = $(foreach d,$(COR_BRIDGE_DIRS),$(if $(wildcard $(ROOT)/$(d)/makefile),$(d)))
+COR_BRIDGES_ABSENT = $(filter-out $(COR_BRIDGES_HERE),$(COR_BRIDGE_DIRS))
+ifneq ($(strip $(COR_BRIDGES_ABSENT)),)
+$(info corLibs: no clone of $(COR_BRIDGES_ABSENT) beside it - not built (a bridge is optional))
+endif
+COR_DIRS = $(COR_LIB_DIRS) $(COR_BRIDGES_HERE)
 
 DIRS = $(COR_DIRS)
 
