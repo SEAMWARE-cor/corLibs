@@ -45,6 +45,13 @@ on:
 env:
   IMAGE_NAME: coraine-ci
 
+# The build cache (type=gha) needs a token that may write it: the org's and the repo's default token is
+# read-only, and since 2026-11-18 a cache write with it fails the whole build ("cache write denied: token
+# has no writable scopes") - after the image was built, before it was pushed.
+permissions:
+  contents: read
+  actions: write
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -93,7 +100,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: quay.io/seamware/${{ env.IMAGE_NAME }}:${{ steps.tags.outputs.date_sha }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: type=gha,mode=max,ignore-error=true   # a cache that cannot be saved never stops the image
 
       #
       # The nightly image is FROM the one just built, so it must come after - and
@@ -110,7 +117,7 @@ jobs:
           build-args: BASE_TAG=${{ steps.tags.outputs.date_sha }}
           tags: quay.io/seamware/${{ env.IMAGE_NAME }}-nightly:${{ steps.tags.outputs.date_sha }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: type=gha,mode=max,ignore-error=true   # a cache that cannot be saved never stops the image
 
       #
       # The mongo service image, and it is a service image rather than a base:
@@ -131,7 +138,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: quay.io/seamware/mongo-rs:${{ steps.tags.outputs.date_sha }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: type=gha,mode=max,ignore-error=true   # a cache that cannot be saved never stops the image
 
       #
       # The property every consumer depends on, asserted here so a consumer does
