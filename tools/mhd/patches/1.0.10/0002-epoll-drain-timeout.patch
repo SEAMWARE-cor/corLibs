@@ -1,0 +1,31 @@
+mhd-epoll-drain-timeout - after a full batch of 128 epoll events, the rest drained without waiting
+
+MHD_epoll() calls epoll_wait() again as long as one returns a full batch (MAX_EVENTS, 128), and every
+call waits up to the daemon's timeout. When a full batch was the last of the pending events, the next
+call blocks for the whole timeout - and with edge-triggered connections that each wait for their
+response, nothing new can arrive meanwhile: every connection stalls until the clients give up.
+256, 257 and 512 keep-alive connections opened at once (wrk -t8 -c256) gave 270 - 1 800 req/s instead
+of ~165 000 (the plain MHD server; coraine 374 req/s at 256 clients instead of ~35 000). The same loop is
+in upstream master (reported: https://github.com/Karlson2k/libmicrohttpd/issues/43).
+
+The first call waits as before; the following ones only drain what is pending (timeout 0). Nothing
+else changes.
+
+Measured (coraine on one core, GET of a 20-entity page, MHD_USE_EPOLL): 256 clients 35 500 req/s, p99
+9 ms; 512: 36 000 req/s, p99 16 ms (MHD_USE_POLL: p99 310 ms and 976 ms). libmicrohttpd's own `make
+check` (with libcurl, without HTTPS): 164 of 164 pass.
+
+--- a/src/microhttpd/daemon.c
++++ b/src/microhttpd/daemon.c
+@@ -5865,6 +5865,11 @@ MHD_epoll (struct MHD_Daemon *daemon,
+                              events,
+                              MAX_EVENTS,
+                              timeout_ms);
++    /* A full batch may have been the last of the pending events: the next
++       call only drains what is left, it must not wait.  With edge-triggered
++       connections nothing new arrives until they are processed, so waiting
++       here would stall every connection until the timeout. */
++    timeout_ms = 0;
+     if (-1 == num_events)
+     {
+       const int err = MHD_socket_get_error_ ();
