@@ -20,7 +20,8 @@
 # gnu-keyring.gpg <tarball>.sig <tarball>`, then its sha256sum here.
 #
 # Every patch in patches/<version>/ is applied, in name order. A patched library behaves as the release
-# does (each patch says why it exists and what it keeps); coraine works unchanged on an unpatched one.
+# does (each patch says why it exists and what it keeps). coraine runs on an unpatched one, but corRest's
+# MHD_USE_EPOLL needs 1.0.10's 0002-epoll-drain-timeout: without it, ~256 connections opened at once stall.
 #
 # Copyright 2026 Seamware
 # SPDX-License-Identifier: Apache-2.0
