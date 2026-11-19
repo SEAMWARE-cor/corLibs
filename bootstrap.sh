@@ -25,6 +25,8 @@
 #   JOBS=8 ./bootstrap.sh          # parallel build jobs
 #   RESOLVE=1 ./bootstrap.sh       # print '<repo> <sha>' for this umbrella and every ref below, nothing else
 #   COR_LIBS_PIN="$(cat pin.txt)" ./bootstrap.sh   # every repository at the commit a RESOLVE printed
+#   COR_LIBS_KEEP="corCep" ./bootstrap.sh  # these checkouts stay exactly as they are (a repo's own CI,
+#                                           # whose checkout is the PR under test) - still built
 #
 # After it completes, build the broker:
 #   cd <BASE>/coraine && make di
@@ -216,6 +218,12 @@ for entry in "${REPOS[@]}"; do
   IFS=':' read -r repo host ref org <<< "$entry"
   echo
   echo ">>> $repo ($host, $ref)"
+
+  if [[ " ${COR_LIBS_KEEP:-} " == *" $repo "* ]]; then
+    [ -d "$BASE/$repo" ] || { echo "COR_LIBS_KEEP names $repo, but $BASE/$repo is not there" >&2; exit 1; }
+    echo ">>> $repo kept as it is (COR_LIBS_KEEP)"
+    continue
+  fi
 
   if [ -d "$BASE/$repo/.git" ]; then
     gitRetry "$repo fetch" git -C "$BASE/$repo" fetch --all --quiet
