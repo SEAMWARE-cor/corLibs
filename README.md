@@ -25,14 +25,14 @@ them; it does not vendor them.
 ```
 ~/git/
 ├── corLibs/        ← this repo (umbrella: makefile + iter.sh, collects into bin/ lib/)
-├── corBase  corLog  corAlloc  corArgs  corHash  corTree  corJson  corProm  ← Cor-Libs  (github.com/SEAMWARE)
+├── corBase  corLog  corAlloc  corArgs  corHash  corTree  corJson  corProm  ← Cor-Libs  (github.com/SEAMWARE-cor)
 ├── corHttp  corBridge  corRest  corJsonld  corPlugin  corNgsild
 ├── corDB                                                      ← the in-process database (plugins)
-├── corTools                                                   ← corRequest, corTestClient, corMongoDrop (github.com/SEAMWARE)
+├── corTools                                                   ← corRequest, corTestClient, corMongoDrop (github.com/SEAMWARE-cor)
 ├── corDdsBridge  corModbusBridge  corMqttBridge               ← bridge plugins built by the umbrella
 ├── corCkanBridge  corOpcuaBridge                              ← bridge plugins cloned, not built by the umbrella
-├── corCep                                                      ← the rule engine; the umbrella builds its plugin, cep.so (SEAMWARE/corCep)
-├── corTest                                                    ← test runner (github.com/SEAMWARE)
+├── corCep                                                      ← the rule engine; the umbrella builds its plugin, cep.so (github.com/SEAMWARE)
+├── corTest                                                    ← test runner (github.com/SEAMWARE-cor)
 └── coraine                                                  ← the broker (links the above)
 ```
 
@@ -50,7 +50,7 @@ clone, no plugin. It is SEAMWARE's (`bootstrap.sh`: `repo:host:ref:org`), not SE
 
 Each library has its own README (linked below — the repo landing page renders it).
 
-**Cor-Libs** (github.com/SEAMWARE):
+**Cor-Libs** (github.com/SEAMWARE-cor):
 
 - [corBase](https://github.com/SEAMWARE-cor/corBase) — core utilities, coroutines and the library log
 - [corLog](https://github.com/SEAMWARE-cor/corLog) — logging and trace levels
@@ -67,7 +67,7 @@ Each library has its own README (linked below — the repo landing page renders 
 - [corPlugin](https://github.com/SEAMWARE-cor/corPlugin) — generic plugin loader (`dlopen` wrapper)
 - [corNgsild](https://github.com/SEAMWARE-cor/corNgsild) — NGSI-LD validation + format conversion
 
-**Plugins** (github.com/SEAMWARE):
+**Plugins** (github.com/SEAMWARE-cor):
 
 - [corDB](https://github.com/SEAMWARE-cor/corDB) — the in-process database: current state and TRoE (`corDB.so`, `troe/corDB.so`)
 - [corDdsBridge](https://github.com/SEAMWARE-cor/corDdsBridge) — DDS (and ROS 2) bridge, `dds.so`
@@ -76,7 +76,7 @@ Each library has its own README (linked below — the repo landing page renders 
 - [corCkanBridge](https://github.com/SEAMWARE-cor/corCkanBridge) — CKAN open-data bridge (not built by the umbrella)
 - [corOpcuaBridge](https://github.com/SEAMWARE-cor/corOpcuaBridge) — OPC UA bridge, open62541 (not built by the umbrella)
 
-**Tooling** (github.com/SEAMWARE):
+**Tooling** (github.com/SEAMWARE-cor):
 
 - [corTest](https://github.com/SEAMWARE-cor/corTest) — generic functional-test harness (input → stdout, with `REGEX()` / `#SORT` smart diff); `install` collects its runner into `bin/`
 - [corTools](https://github.com/SEAMWARE-cor/corTools) — `corRequest` (a cor:// client: one request like `curl -i`, or load like `wrk`), `corTestClient` (notification receiver, mock context source, bridge-plugin host) and `corMongoDrop` (drops MongoDB databases fast, where libmongoc is); `install` collects them into `bin/`
