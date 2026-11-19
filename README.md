@@ -31,6 +31,7 @@ them; it does not vendor them.
 ├── corTools                                                   ← corRequest, corTestClient, corMongoDrop (github.com/SEAMWARE)
 ├── corDdsBridge  corModbusBridge  corMqttBridge               ← bridge plugins built by the umbrella
 ├── corCkanBridge  corOpcuaBridge                              ← bridge plugins cloned, not built by the umbrella
+├── corCep                                                      ← the rule engine; the umbrella builds its plugin, cep.so (SEAMWARE/corCep)
 ├── corTest                                                    ← test runner (github.com/SEAMWARE)
 └── coraine                                                  ← the broker (links the above)
 ```
@@ -41,6 +42,9 @@ corHttp, because corRest links it on a `COR_HTTP_SERVER=builtin` build; corDB af
 where no coraine checkout sits beside it); corTools after the libraries, since its tools link the whole stack; the bridge
 plugins last - corDdsBridge is skipped, with the reason, where the DDS Enabler is not installed. corCkanBridge and
 corOpcuaBridge are cloned by `bootstrap.sh` but not built here: coraine's `coraine-build` builds them when asked (`--bridges ckan`, `--bridges opcua`).
+corCep is built last, and only its plugin: `make plugin-install` there puts `cep.so` (`coraine --bridges cep`) beside the
+bridges - it links no cor-lib, it uses coraine's, so it is built against this very checkout of them. Optional too: no
+clone, no plugin. It is SEAMWARE's (`bootstrap.sh`: `repo:host:ref:org`), not SEAMWARE-cor's.
 
 ## Libraries
 

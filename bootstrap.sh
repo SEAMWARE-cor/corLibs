@@ -44,7 +44,7 @@ JOBS="${JOBS:-$(nproc 2>/dev/null || echo 4)}"
 CI_ORG="SEAMWARE-cor"    # the cor* repos
 
 #
-# repo : host : ref
+# repo : host : ref [: org]   (org: the GitHub organisation, default $CI_ORG - corCep is SEAMWARE's)
 #
 # The cor* repos track main: they move together, and a pin between them would
 # only ever be stale. corLibs itself is deliberately absent - you are standing
@@ -73,6 +73,7 @@ REPOS=(
   "corDB:github:main"
   "corTools:github:main"
   "corTest:github:main"
+  "corCep:github:main:SEAMWARE"
 )
 
 #
@@ -149,10 +150,10 @@ cloneFresh()
 
 urlFor()
 {
-  local repo="$1" host="$2"
+  local repo="$1" host="$2" org="${3:-$CI_ORG}"
 
-  [ "$PROTO" = ssh ] && echo "git@github.com:$CI_ORG/${repo}.git" \
-                     || echo "https://github.com/$CI_ORG/${repo}.git"
+  [ "$PROTO" = ssh ] && echo "git@github.com:$org/${repo}.git" \
+                     || echo "https://github.com/$org/${repo}.git"
 }
 
 
@@ -164,8 +165,8 @@ urlFor()
 if [ "${RESOLVE:-0}" = 1 ]; then
   echo "corLibs $(git -C "$HERE" rev-parse HEAD)"
   for entry in "${REPOS[@]}"; do
-    IFS=':' read -r repo host ref <<< "$entry"
-    sha=$(gitRetry "$repo ls-remote" git ls-remote "$(urlFor "$repo" "$host")" "refs/heads/$ref" | cut -f1)
+    IFS=':' read -r repo host ref org <<< "$entry"
+    sha=$(gitRetry "$repo ls-remote" git ls-remote "$(urlFor "$repo" "$host" "$org")" "refs/heads/$ref" | cut -f1)
     [ -n "$sha" ] || { echo "$repo has no $ref" >&2; exit 1; }
     echo "$repo $sha"
   done
@@ -212,7 +213,7 @@ mkdir -p "$BASE"
 # 1. Clone or update every dependency, as a sibling.
 #
 for entry in "${REPOS[@]}"; do
-  IFS=':' read -r repo host ref <<< "$entry"
+  IFS=':' read -r repo host ref org <<< "$entry"
   echo
   echo ">>> $repo ($host, $ref)"
 
@@ -222,7 +223,7 @@ for entry in "${REPOS[@]}"; do
     # Fast-forward only - never merge.
     git -C "$BASE/$repo" pull --ff-only --quiet || true
   else
-    gitRetry "$repo clone" cloneFresh "$(urlFor "$repo" "$host")" "$ref" "$BASE/$repo"
+    gitRetry "$repo clone" cloneFresh "$(urlFor "$repo" "$host" "$org")" "$ref" "$BASE/$repo"
   fi
 
   if [ -n "${COR_LIBS_PIN:-}" ]; then
