@@ -48,7 +48,28 @@ ROOT ?= $(abspath $(dir $(lastword $(MAKEFILE_LIST)))..)
 # needs nothing beyond libc, so it is always built. corMqttBridge likewise, with
 # libmosquitto, which the broker itself linked until MQTT became mqtt.so.
 #
-COR_DIRS = corBase corLog corAlloc corArgs corHash corTree corJson corProm corHttp corBridge corRest corJsonld corPlugin corNgsild corDB corTools corDdsBridge corModbusBridge corMqttBridge
+# The bridges are OPTIONAL directories: a bridge plugin is built when its clone is there and skipped, said once,
+# when it is not - a broker built without dds needs no corDdsBridge clone (coraine-build exports only the bridges
+# --bridges names). The libraries above are not optional: a missing one still fails the build.
+#
+COR_LIB_DIRS    = corBase corLog corAlloc corArgs corHash corTree corJson corProm corHttp corBridge corRest corJsonld corPlugin corNgsild corDB corTools
+COR_BRIDGE_DIRS = corDdsBridge corModbusBridge corMqttBridge
+COR_BRIDGES_HERE   = $(foreach d,$(COR_BRIDGE_DIRS),$(if $(wildcard $(ROOT)/$(d)/makefile),$(d)))
+COR_BRIDGES_ABSENT = $(filter-out $(COR_BRIDGES_HERE),$(COR_BRIDGE_DIRS))
+ifneq ($(strip $(COR_BRIDGES_ABSENT)),)
+$(info corLibs: no clone of $(COR_BRIDGES_ABSENT) beside it - not built (a bridge is optional))
+endif
+COR_DIRS = $(COR_LIB_DIRS) $(COR_BRIDGES_HERE)
+
+#
+# corCep - the rule engine (SEAMWARE/corCep): a program of its own, and cep.so, its form inside coraine (--bridges cep)
+# - a bridge plugin claiming the notification scheme inproc. Optional like the bridges, and built LAST: cep.so links
+# no cor-lib - it uses coraine's - so it must be built against this very checkout of them. Its makefile's plugin-*
+# targets, not its own all/install (the standalone program, in /usr/local/bin): plugin-install puts cep.so beside
+# the other bridges, /opt/seamware/plugins/bridge.
+#
+COR_PLUGIN_REPOS = corCep
+COR_PLUGIN_REPOS_HERE = $(foreach d,$(COR_PLUGIN_REPOS),$(if $(wildcard $(ROOT)/$(d)/makefile),$(d)))
 
 DIRS = $(COR_DIRS)
 
@@ -58,6 +79,7 @@ LIB_DIR     = $(CORLIBS_HOME)/lib
 
 all install clean ci cdi di i debug:
 	@for dir in $(DIRS); do echo "=== $$dir: $@ ===" && $(MAKE) -C $(ROOT)/$$dir $@ || exit 1; done
+	@for dir in $(COR_PLUGIN_REPOS_HERE); do echo "=== $$dir: plugin-$@ ===" && $(MAKE) -C $(ROOT)/$$dir plugin-$@ || exit 1; done
 	@$(MAKE) --no-print-directory install-local
 
 install-local:
