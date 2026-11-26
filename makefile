@@ -46,14 +46,17 @@ ROOT ?= $(abspath $(dir $(lastword $(MAKEFILE_LIST)))..)
 #
 # corModbusBridge is a bridge plugin too, and sits beside it at the end - but
 # needs nothing beyond libc, so it is always built. corMqttBridge likewise, with
-# libmosquitto, which the broker itself linked until MQTT became mqtt.so.
+# libmosquitto, which the broker itself linked until MQTT became mqtt.so; corCkanBridge
+# (libc only) and corAasBridge (OpenSSL, which the broker links too) as well.
+# corOpcuaBridge is not here: it links open62541, which no distribution before Ubuntu 26.04 /
+# Debian 13 packages - coraine-build --bridges opcua builds it where the library is.
 #
 # The bridges are OPTIONAL directories: a bridge plugin is built when its clone is there and skipped, said once,
 # when it is not - a broker built without dds needs no corDdsBridge clone (coraine-build exports only the bridges
 # --bridges names). The libraries above are not optional: a missing one still fails the build.
 #
 COR_LIB_DIRS    = corBase corLog corAlloc corArgs corHash corTree corJson corProm corHttp corBridge corRest corJsonld corPlugin corNgsild corDB corTools
-COR_BRIDGE_DIRS = corDdsBridge corModbusBridge corMqttBridge
+COR_BRIDGE_DIRS = corDdsBridge corModbusBridge corMqttBridge corCkanBridge corAasBridge
 COR_BRIDGES_HERE   = $(foreach d,$(COR_BRIDGE_DIRS),$(if $(wildcard $(ROOT)/$(d)/makefile),$(d)))
 COR_BRIDGES_ABSENT = $(filter-out $(COR_BRIDGES_HERE),$(COR_BRIDGE_DIRS))
 ifneq ($(strip $(COR_BRIDGES_ABSENT)),)
@@ -77,7 +80,7 @@ CORLIBS_HOME = $(ROOT)/corLibs
 BIN_DIR     = $(CORLIBS_HOME)/bin
 LIB_DIR     = $(CORLIBS_HOME)/lib
 
-all install clean ci cdi di i debug:
+all install clean ci di:
 	@for dir in $(DIRS); do echo "=== $$dir: $@ ===" && $(MAKE) -C $(ROOT)/$$dir $@ || exit 1; done
 	@for dir in $(COR_PLUGIN_REPOS_HERE); do echo "=== $$dir: plugin-$@ ===" && $(MAKE) -C $(ROOT)/$$dir plugin-$@ || exit 1; done
 	@$(MAKE) --no-print-directory install-local
@@ -133,9 +136,12 @@ install-local:
 	done
 	@echo "Installed: bin/ lib/"
 
+#
+# test - the libraries' own tests; a bridge's suite (ckan, aas) needs a broker and runs in that bridge's repo
+#
 test:
 	@total=0; errors=0; \
-	for dir in $(DIRS); do \
+	for dir in $(COR_LIB_DIRS); do \
 	  if ! grep -q '^test:' $(ROOT)/$$dir/makefile 2>/dev/null; then \
 	    printf "%-12s 0 test cases, 0 errors\n" "$$dir:"; \
 	    continue; \
@@ -197,14 +203,12 @@ pull:
 	done
 
 help:
-	@echo "make all       - build all libraries (release)"
-	@echo "make debug     - build all libraries (debug)"
+	@echo "make all       - build all libraries and bridges (BUILD=debug, the default, or BUILD=release)"
 	@echo "make install   - build and install headers + libs"
 	@echo "make ci        - clean + install"
-	@echo "make di        - debug + install"
-	@echo "make cdi       - clean + debug + install"
+	@echo "make di        - build + install"
 	@echo "make clean     - clean all libraries"
-	@echo "make test      - run all test suites"
+	@echo "make test      - run the libraries' tests"
 	@echo "make gs        - git status across all libraries"
 	@echo "make branch    - show current branch per library"
 	@echo "make pull      - git pull in all libraries"
